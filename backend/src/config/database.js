@@ -1,12 +1,15 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-const nodeEnv = process.env.NODE_ENV || 'development';
-const isQa = nodeEnv === 'qa';
+const DEFAULT_NEON_DB_URL = "postgresql://neondb_owner:npg_XFje1yJ6rtZY@ep-dry-dew-aelm24st.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
 
-let rawDatabaseUrl = isQa
-  ? (process.env.DATABASE_URL || process.env.DATABASE_URL_POOLED)
-  : (process.env.DATABASE_URL || process.env.DATABASE_URL_POOLED || null);
+const nodeEnv = process.env.NODE_ENV || 'development';
+const isVercel = Boolean(process.env.VERCEL === '1' || process.env.VERCEL_ENV);
+const isQa = nodeEnv === 'qa' || isVercel;
+
+let rawDatabaseUrl = process.env.DATABASE_URL || 
+  process.env.DATABASE_URL_POOLED || 
+  (isVercel || isQa ? DEFAULT_NEON_DB_URL : null);
 
 // Clean channel_binding parameter for node-postgres compatibility
 const databaseUrl = rawDatabaseUrl
@@ -14,6 +17,7 @@ const databaseUrl = rawDatabaseUrl
   : null;
 
 const isPostgres = Boolean(
+  isVercel ||
   isQa ||
   process.env.DB_DIALECT === 'postgres' ||
   (databaseUrl && (databaseUrl.startsWith('postgres://') || databaseUrl.startsWith('postgresql://')))
