@@ -73,19 +73,23 @@ app.use((err, req, res, next) => {
 // Start Server
 const startServer = async () => {
   try {
-    // 1. Check/create database in MySQL
+    // 1. Check/create database in MySQL / Postgres
     await initDatabase();
 
     await sequelize.authenticate();
     console.log(`[Sequelize] ${sequelize.getDialect().toUpperCase()} database connected successfully.`);
     console.log('[Sequelize] Database schema ready.');
 
-    app.listen(PORT, () => {
-      console.log(`[Server] Pariksha Backend running on http://localhost:${PORT}`);
-    });
+    if (process.env.VERCEL !== '1') {
+      app.listen(PORT, () => {
+        console.log(`[Server] Pariksha Backend running on http://localhost:${PORT}`);
+      });
+    }
   } catch (error) {
     console.error('[Server] Failed to initialize server:', error);
-    process.exit(1);
+    if (process.env.VERCEL !== '1') {
+      process.exit(1);
+    }
   }
 };
 
