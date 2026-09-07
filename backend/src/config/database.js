@@ -6,7 +6,7 @@ const DEFAULT_NEON_DB_URL = "postgresql://neondb_owner:npg_XFje1yJ6rtZY@ep-dry-d
 const nodeEnv = process.env.NODE_ENV || "development";
 const isVercel = Boolean(process.env.VERCEL === "1" || process.env.VERCEL_ENV);
 const isQa = nodeEnv === "qa" || isVercel;
-console.log(isQA);
+console.log(isQa);
 
 let rawDatabaseUrl = process.env.DATABASE_URL || process.env.DATABASE_URL_POOLED || (isVercel || isQa ? DEFAULT_NEON_DB_URL : null);
 
